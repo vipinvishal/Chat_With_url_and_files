@@ -1,0 +1,5 @@
+euriai[langgraph]
+streamlit 
+beautifulsoup4
+langgraph
+pandas
