@@ -156,6 +156,6 @@ else:
 st.markdown("""
 <hr style='margin-top:30px;'>
 <p style='text-align:center; color:gray; font-size:13px'>
-Made with ❤️ using Streamlit &  AI
+Made with ❤️  Monika &  AI
 </p>
 """, unsafe_allow_html=True)
