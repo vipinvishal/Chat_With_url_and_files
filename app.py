@@ -1,5 +1,7 @@
 import streamlit as st
-from backend import ingest_csv, crawl_website, index_data
+#from backend import ingest_csv, crawl_website, index_data
+from backend import ingest_file, crawl_website, index_data
+
 import pandas as pd
 
 st.set_page_config(page_title="Doc Chatbot", layout="centered")
@@ -34,7 +36,9 @@ st.markdown("""
 st.title("📄Document Chatbot - Wesite URL chatbot")
 
 st.sidebar.header("Data Ingestion")
-uploaded_file = st.sidebar.file_uploader("Upload CSV", type=["csv"])
+#uploaded_file = st.sidebar.file_uploader("Upload CSV", type=["csv"])
+uploaded_file = st.sidebar.file_uploader("Upload File", type=["csv", "xlsx", "xls", "docx", "pdf"])
+
 url = st.sidebar.text_input("Enter Website URL")
 
 if 'doc_context' not in st.session_state:
@@ -50,15 +54,18 @@ if 'web_snippet' not in st.session_state:
 
 # Ingest document
 if uploaded_file:
-    df = ingest_csv(uploaded_file)
-    st.session_state['doc_context'] = df.to_csv(index=False)
-    st.session_state['data_type'] = 'csv'
-    st.session_state['csv_info'] = {
-        'shape': df.shape,
-        'columns': list(df.columns),
-        'preview': df.head().to_dict()
-    }
-    st.sidebar.success("CSV uploaded and indexed!")
+    # Save file temporarily to disk to pass path to ingest_file
+    with open(uploaded_file.name, "wb") as f:
+        f.write(uploaded_file.getbuffer())
+
+    try:
+        file_text = ingest_file(uploaded_file.name)
+        st.session_state['doc_context'] = file_text
+        st.session_state['data_type'] = 'file'
+        st.sidebar.success("File uploaded and indexed!")
+    except Exception as e:
+        st.sidebar.error(f"Error reading file: {str(e)}")
+
 elif url:
     with st.spinner("Crawling website..."):
         text = crawl_website(url)
@@ -68,17 +75,18 @@ elif url:
         st.sidebar.success("Website crawled and indexed!")
 
 # Data details section
+# Data details section
 if st.session_state['doc_context']:
     st.subheader("Data Details")
-    if st.session_state['data_type'] == 'csv' and st.session_state['csv_info']:
-        info = st.session_state['csv_info']
-        st.write(f"**CSV Shape:** {info['shape']}")
-        st.write(f"**Columns:** {info['columns']}")
-        st.write("**Preview:**")
-        st.dataframe(pd.DataFrame(info['preview']))
+    
+    if st.session_state['data_type'] == 'file':
+        st.write("**Extracted Text Snippet:**")
+        st.code(st.session_state['doc_context'][:500])
+    
     elif st.session_state['data_type'] == 'web' and st.session_state['web_snippet']:
         st.write("**Website Text Snippet:**")
         st.code(st.session_state['web_snippet'])
+
 
     # Custom chat container
     st.markdown('<div class="chat-container">', unsafe_allow_html=True)
@@ -124,4 +132,5 @@ if st.session_state['doc_context']:
         st.session_state['chat_history'].append({'role': 'bot', 'content': ai_response})
         st.rerun()
 else:
-    st.info("Upload a CSV or enter a website URL to begin chatting.") 
+    st.info("Upload a document (CSV, Excel, Word, PDF) or enter a website URL to begin chatting.")
+ 

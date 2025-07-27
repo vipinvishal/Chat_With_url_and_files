@@ -1,5 +1,7 @@
-euriai[langgraph]
+euriai
 streamlit 
 beautifulsoup4
 langgraph
 pandas
+python-docx
+PyPDF2
