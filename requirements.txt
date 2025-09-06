@@ -1,7 +1,5 @@
-euriai
-streamlit 
+streamlit
 beautifulsoup4
-langgraph
-pandas
-python-docx
+requests
 PyPDF2
+openpyxl

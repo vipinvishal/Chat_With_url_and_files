@@ -5,7 +5,7 @@ from euriai.langgraph import EuriaiLangGraph
 
 
 # EURI API Key
-EURI_API_KEY = "euri-ec46960a6b9348cf03a2cb42ee521494091f14da15d15f065e8ea7b86c1a0e11"
+EURI_API_KEY = "euri-7363b0761f2f06b6011abe8e40f93f78236fe61b94790a511afa1b4d387f8613"
 
 graph = EuriaiLangGraph(
     api_key=EURI_API_KEY,
